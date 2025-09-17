@@ -1,0 +1,24 @@
+create database mae;
+
+use mae;
+
+create table tbvenda(
+NF int not null auto_increment,
+primary key(NF),
+DataValidade datetime not null
+);
+
+alter table tbVenda add Preco decimal(15, 2) not null;
+alter table tbVenda add Qtd smallint;
+
+
+alter table tbVenda drop DataValidade;
+
+alter table tbVenda add DataVenda datetime default current_timestamp();
+
+create table produto(
+CodigoB decimal(13,0) primary key,
+NomeProd varchar(50) not null
+);
+
+alter tbVenda foreign key(FK) references (CodigoB);
