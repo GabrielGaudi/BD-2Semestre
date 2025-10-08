@@ -38,12 +38,6 @@ show tables;
 describe tbendereco;
 describe tbestado;
 
-
-
-
-
-
-
 alter table estado_tb add idCit int;
 
 
