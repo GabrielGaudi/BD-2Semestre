@@ -65,17 +65,76 @@ call inserirProduto(12345678910116, "Boneco do Hitler", 124.00, 200);
 call inserirProduto(12345678910117, "Farinha de Suruí",  50.00, 200);
 call inserirProduto(12345678910118, "Zelador de Cemitério",  24.50, 100);
 
+
+
+
 Delimiter $$
-create procedure inserirEndereco(Logradouro varchar(200), CEP decimal(8,0), BairroId int, CidadeId int, UFId int)
+create procedure inserirEndereco(Logradouro varchar(200), CEP decimal(8,0), BairroNome varchar(200), CidadeNome varchar(200), UFNome varchar(200))
 begin
-insert into tbendereco(Logradouro, CEP, BairroId, CidadeId, UFId) value(Logradouro, CEP, BairroId, CidadeId, UFId);
+declare BairroNovoId int;
+declare CidadeNovaId int;
+declare UFNovoId int;
+
+if not exists (select BairroId from tbBairro where Bairro = BairroNome)
+then insert into tbBairro(Bairro) value(BairroNome);
+
+end if;
+
+set BairroNovoId = (select BairroId from tbBairro where Bairro = BairroNome);
+
+
+if not exists (select CidadeId from tbCidade where Cidade = CidadeNome)
+then insert into tbCidade(Cidade) value(CidadeNome);
+
+end if;
+
+set CidadeNovaId = (select CidadeId from tbCidade where Cidade = CidadeNome);
+
+
+
+if not exists (select UFId from tbEstado where UF = UFNome)
+then insert into tbEstado(UF) value(UFNome);
+
+end if;
+
+set UFNovoId = (select UFId from tbEstado where UF = UFNome);
+
+
+insert into tbendereco(Logradouro, CEP, BairroId, CidadeId, UFId) value(Logradouro, CEP, BairroNovoId, CidadeNovaId, UFNovoId);
 end $$
 
-call inserirEndereco("Rua da Federal ", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
-call inserirEndereco("", , , , );
+call inserirEndereco("Rua da Federal ", 12345050, "Lapa", "São Paulo", "SP");
+call inserirEndereco("Av Brasil", 12345051, "Lapa", "Campinas", "SP");
+call inserirEndereco("Rua Liberdade", 12345052, "Consolação", "São Paulo", "SP");
+call inserirEndereco("Av Paulista", 12345053, "Penha", "Rio de Janeiro", "RJ");
+call inserirEndereco("Rua Ximbú", 12345054, "Penha", "Rio de Janeiro", "RJ");
+call inserirEndereco("Rua Piu XI", 12345055, "Penha", "Campinas", "SP");
+call inserirEndereco("Rua Chocolate", 12345056, "Aclimação", "Barra Mansa", "RJ");
+call inserirEndereco("Rua Pão na Chapa", 12345057, "Barra Funda", "Ponta Grossa", "RS");
+
+
+
+Delimiter $$
+create procedure inserirClientePF(NovoId int, NovoNomeCli varchar(200), NovoNumEnd decimal(6,0), NovoCompEnd varchar(50), NovoCepCli decimal(8,0), NovoCPF decimal(11,0), 
+NovoRG decimal(9,0), NovoRG_Dig char(1), NovoNasc date, NovoLogradouro varchar(200), NovoCidade varchar(200), NovoBairro varchar(200), NovoUF char(2))
+begin
+
+
+call inserirEndereco(NovoLogradouro, NovoCepCli, NovoBairro, NovoCidade, NovoUF);
+
+
+insert into tbCliente(Id, NomeCli, NumEnd, CompEnd, CepCli) values(NovoId, NovoNomeCli, NovoNumEnd, NovoCompEnd, NovoCepCli);
+
+
+insert into tbClientePF(CPF, RG, RG_Dig, Nasc, Id) values (NovoCPF, NovoRG, NovoRg_Dig, NovoNasc, NovoId);
+end
+$$
+
+call inserirClientePF(1, "Pimpão", 325, Null, 12345051, 12345678911, 12345678, 0, '2000-10-12', "Av Brasil", "Campinas", "Lapa", "SP");
+
+select * from tbCliente;
+select * from tbClientePF;
+select * from tbEndereco;
+select * from tbBairro;
+select * from tbCidade;
+select * from tbEstado;
