@@ -241,16 +241,16 @@ call inserirNota(359, "Pimpão");
 
 /*exercicio 12*/
 Delimiter $$
-create procedure inserirProduto(NovoCodigoBarras decimal(14,0), NovoNome varchar(200), NovoValor decimal(8,2), NovoQtd int)
+create procedure inserirProduto12(NovoCodigoBarras decimal(14,0), NovoNome varchar(200), NovoValor decimal(8,2), NovoQtd int)
 begin
 
 insert into tbProduto(CodigoBarras, Nome, Valor, Qtd) values(NovoCodigoBarras, NovoNome, NovoValor, NovoQtd);
 end
 $$
 
-call inserirProduto(12345678910130, "Camiseta de Poliéster", 35.61, 100);
-call inserirProduto(12345678910131, "Blusa Frio Moletom", 200.00, 100);
-call inserirProduto(12345678910132, "Vestido Decote Redondo", 144.00, 50);
+call inserirProduto12(12345678910130, "Camiseta de Poliéster", 35.61, 100);
+call inserirProduto12(12345678910131, "Blusa Frio Moletom", 200.00, 100);
+call inserirProduto12(12345678910132, "Vestido Decote Redondo", 144.00, 50);
 
 
 /*exercicio 13*/
