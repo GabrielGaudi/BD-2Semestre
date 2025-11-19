@@ -1,7 +1,7 @@
 use dbdistribuidora;
 
 /*exercicio 1*/
-insert into tbfornecedor(Codigo, Nome, CNPJ, Telefone) values
+insert into tbFornecedor(Codigo, Nome, CNPJ, Telefone) values
 (1, "Revenda Chico Loco", 1245678937123, 11934567897),
 (2, "José Faz Tudo S/A", 1345678937123, 11934567898),
 (3, "Vadalto Entregas", 1445678937123, 11934567899),
@@ -15,7 +15,7 @@ insert into tbfornecedor(Codigo, Nome, CNPJ, Telefone) values
 Delimiter $$
 create procedure inserirCidade(Id int, Cidade varchar(200))
 begin
-insert into tbcidade(CidadeId, Cidade) value(Id, Cidade);
+insert into tbCidade(CidadeId, Cidade) value(Id, Cidade);
 end $$
 
 call inserirCidade(1,"Rio de Janeiro");
@@ -31,7 +31,7 @@ call inserirCidade(8,"Ponta Grossa");
 Delimiter $$
 create procedure inserirEstado(Id int, UF char(2))
 begin
-insert into tbestado(UFId, UF) value(Id, UF);
+insert into tbEstado(UFId, UF) value(Id, UF);
 end $$
 
 
@@ -43,10 +43,10 @@ call inserirEstado(3,"RS");
 Delimiter $$
 create procedure inserirBairro(Id int, Bairro varchar(200))
 begin
-insert into tbbairro(BairroId, Bairro) value(Id, Bairro);
+insert into tbBairro(BairroId, Bairro) value(Id, Bairro);
 end $$
 
-drop procedure inserirProduto;
+/*drop procedure inserirProduto;*/
 
 call inserirBairro(1,"Aclimação");
 call inserirBairro(2,"Capão Redondo");
@@ -69,9 +69,11 @@ call inserirProduto(12345678910116, "Boneco do Hitler", 124.00, 200);
 call inserirProduto(12345678910117, "Farinha de Suruí",  50.00, 200);
 call inserirProduto(12345678910118, "Zelador de Cemitério",  24.50, 100);
 
+drop procedure inserirEndereco;
+
 /*exercicio 6*/
 Delimiter $$
-create procedure inserirEndereco(Logradouro varchar(200), CEP decimal(8,0), BairroNome varchar(200), CidadeNome varchar(200), UFNome varchar(200))
+create procedure inserirEndereco(Logradouro varchar(200), NovoCEP decimal(8,0), BairroNome varchar(200), CidadeNome varchar(200), UFNome varchar(200))
 begin
 declare BairroNovoId int;
 declare CidadeNovaId int;
@@ -82,23 +84,26 @@ then insert into tbBairro(Bairro) value(BairroNome);
 
 end if;
 
-set BairroNovoId = (select BairroId from tbBairro where Bairro = BairroNome);
-
 if not exists (select CidadeId from tbCidade where Cidade = CidadeNome)
 then insert into tbCidade(Cidade) value(CidadeNome);
 
 end if;
-
-set CidadeNovaId = (select CidadeId from tbCidade where Cidade = CidadeNome);
 
 if not exists (select UFId from tbEstado where UF = UFNome)
 then insert into tbEstado(UF) value(UFNome);
 
 end if;
 
+set BairroNovoId = (select BairroId from tbBairro where Bairro = BairroNome);
+set CidadeNovaId = (select CidadeId from tbCidade where Cidade = CidadeNome);
 set UFNovoId = (select UFId from tbEstado where UF = UFNome);
 
-insert into tbendereco(Logradouro, CEP, BairroId, CidadeId, UFId) value(Logradouro, CEP, BairroNovoId, CidadeNovaId, UFNovoId);
+if not exists( select CEP from tbEndereco where CEP = NovoCEP)
+then
+insert into tbendereco(Logradouro, CEP, BairroId, CidadeId, UFId) value(Logradouro, NovoCEP, BairroNovoId, CidadeNovaId, UFNovoId);
+
+end if;
+
 end $$
 
 call inserirEndereco("Rua da Federal ", 12345050, "Lapa", "São Paulo", "SP");
@@ -123,6 +128,8 @@ call inserirEndereco(NovoLogradouro, NovoCepCli, NovoBairro, NovoCidade, NovoUF)
 insert into tbCliente(Id, NomeCli, NumEnd, CompEnd, CepCli) values(NovoId, NovoNomeCli, NovoNumEnd, NovoCompEnd, NovoCepCli);
 
 insert into tbClientePF(CPF, RG, RG_Dig, Nasc, Id) values (NovoCPF, NovoRG, NovoRg_Dig, NovoNasc, novoId);
+
+
 end
 $$
 
@@ -148,10 +155,10 @@ end
 $$
 
 call inserirClientePJ(6, "Paganada", 12345678912345, 98765432198, 12345051, "Av Brasil", 159, Null, "Lapa", "Campinas", "SP");
-call inserirClientePJ(7, "Caloteando", 12345678912346, 98765432199, 12345053, "Av Paulista", 69, Null, "Penha" "Rio de Janeiro", "RJ");
+call inserirClientePJ(7, "Caloteando", 12345678912346, 98765432199, 12345053, "Av Paulista", 69, Null, "Penha", "Rio de Janeiro", "RJ");
 call inserirClientePJ(8, "Semgrana", 12345678912347, 98765432100, 12345060, "Rua dos Amores", 189, Null, "Sei Lá", "Recife", "PE");
-call inserirClientePJ(9, "Cemreais", 12345678912348, 98765432101, 12345-060, "Rua dos Amores" 5024, "Sala 23", "Sei Lá", "Recife", "PE");
-call inserirClientePJ(10, "Durango", 12345678912349, 98765432102, 12345-060, "Rua dos Amores", 1254, Null, "Sei Lá", "Recife", "PE");
+call inserirClientePJ(9, "Cemreais", 12345678912348, 98765432101, 12345060, "Rua dos Amores" 5024, "Sala 23", "Sei Lá", "Recife", "PE");
+call inserirClientePJ(10, "Durango", 12345678912349, 98765432102, 12345060, "Rua dos Amores", 1254, Null, "Sei Lá", "Recife", "PE");
 
 /*exercicio 9 */
 Delimiter $$
@@ -235,7 +242,7 @@ end if;
 end
 $$
 
-drop procedure inserirNota;
+/*drop procedure inserirNota;*/
 
 call inserirNota(359, "Pimpão");
 
@@ -294,6 +301,7 @@ call mostrarProdutos();
 
 select * from tbCliente;
 select * from tbClientePJ;
+select * from tbClientePF;
 select * from tbEndereco;
 select * from tbBairro;
 select * from tbCidade;
