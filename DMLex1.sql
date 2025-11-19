@@ -1,4 +1,4 @@
-use dbdistribuidora;
+/*use dbdistribuidora;*/
 
 /*exercicio 1*/
 insert into tbFornecedor(Codigo, Nome, CNPJ, Telefone) values
@@ -26,6 +26,8 @@ call inserirCidade(5,"Osasco");
 call inserirCidade(6,"Pirituba");
 call inserirCidade(7,"Lapa");
 call inserirCidade(8,"Ponta Grossa");
+
+
 
 /*exercicio 3*/
 Delimiter $$
@@ -69,7 +71,7 @@ call inserirProduto(12345678910116, "Boneco do Hitler", 124.00, 200);
 call inserirProduto(12345678910117, "Farinha de Suruí",  50.00, 200);
 call inserirProduto(12345678910118, "Zelador de Cemitério",  24.50, 100);
 
-drop procedure inserirEndereco;
+--  drop procedure inserirEndereco;
 
 /*exercicio 6*/
 Delimiter $$
@@ -157,7 +159,7 @@ $$
 call inserirClientePJ(6, "Paganada", 12345678912345, 98765432198, 12345051, "Av Brasil", 159, Null, "Lapa", "Campinas", "SP");
 call inserirClientePJ(7, "Caloteando", 12345678912346, 98765432199, 12345053, "Av Paulista", 69, Null, "Penha", "Rio de Janeiro", "RJ");
 call inserirClientePJ(8, "Semgrana", 12345678912347, 98765432100, 12345060, "Rua dos Amores", 189, Null, "Sei Lá", "Recife", "PE");
-call inserirClientePJ(9, "Cemreais", 12345678912348, 98765432101, 12345060, "Rua dos Amores" 5024, "Sala 23", "Sei Lá", "Recife", "PE");
+call inserirClientePJ(9, "Cemreais", 12345678912348, 98765432101, 12345060, "Rua dos Amores", 5024, "Sala 23", "Sei Lá", "Recife", "PE");
 call inserirClientePJ(10, "Durango", 12345678912349, 98765432102, 12345060, "Rua dos Amores", 1254, Null, "Sei Lá", "Recife", "PE");
 
 /*exercicio 9 */
@@ -177,12 +179,18 @@ then
 set DataFormatada = str_to_date(NovoDataCompra, "%d/%m/%Y");
 set FornecedorCodigo = (select Codigo from tbFornecedor where Nome = NovoNomeFornecedor);
 
+if not exists(select NotaFiscal from tbCompra where NotaFiscal = NovoNotaFiscal)
+then 
 insert into tbCompra(NotaFiscal, DataCompra, ValorTotal, QtdTotal, Codigo) values(NovoNotaFiscal, DataFormatada, NovoValorTotal, NovoQtdTotal, FornecedorCodigo);
+
+end if;
 insert into tbItemCompra(NotaFiscal, CodigoBarras, ValorItem, Qtd) values(NovoNotaFiscal, NovoCodigoBarras, NovoValorItem, NovoQtd);
 
 end if;
 end
 $$
+
+-- drop procedure inserirCompras;
 
 call inserirCompras(8459, "Amoroso e Doce", "01/05/2018", 12345678910111, 22.22, 200, 700, 21944.00);
 call inserirCompras(2482, "Revenda Chico Loco", "22/04/2020", "12345678910112", 40.50, 180, 180, 7290.00);
@@ -232,8 +240,8 @@ set IdCliente = (select Id from tbCliente where NomeCli = NomeNota);
 if exists(select Id_Cli from tbVenda where Id_Cli = IdCliente)
 then 
 
-set NovoTotalNota = (select TotalVenda from tbVenda where Id_Cli = IdCliente);
-
+set NovoTotalNota = (select sum(2) as TotalNota from tbVenda where Id_Cli = IdCliente);
+/*select TotalVenda from tbVenda where Id_Cli = IdCliente*/
 
 insert into tbNota_fiscal(NF, TotalNota, DataEmissao) values(NumeroNota, NovoTotalNota, curdate());
 update tbVenda set NF = NumeroNota where Id_Cli = IdCliente;
@@ -245,6 +253,7 @@ $$
 /*drop procedure inserirNota;*/
 
 call inserirNota(359, "Pimpão");
+call inserirNota(360, "LançaPerfume");
 
 /*exercicio 12*/
 Delimiter $$
@@ -307,9 +316,11 @@ select * from tbBairro;
 select * from tbCidade;
 select * from tbEstado;
 
+select * from tbNotaFiscal;
 select * from tbCompra;
 select * from tbItemCompra;
 select * from tbFornecedor;
 select * from tbProduto;
+select * from tbVenda;
 
 drop procedure inserirCompras;
